@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>气泡动画</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <canvas width="1000" height="1000" id="canvas"></canvas>
+    <script>
+        //初始变量
+        function my(){
+		var canvas = document.getElementById("canvas"),
+            		context = canvas.getContext('2d');
+		var x1 = 100;   // 第一个圆圆心的X坐标
+		var y1 = 100;   // 第一个圆圆心的Y坐标
+		var r1 = 10;    // 第一个圆的半径
+		var x2 = 100;   // 第二个圆圆心的X坐标
+		var y2 = 100;   // 第二个圆圆心的Y坐标
+		var r2 = 50;   // 第二个圆的半径
+		var radialGradient1 =
+    			context.createRadialGradient(x1, y1, r1, x2, y2, r2);
+			radialGradient1.addColorStop(0, 'yellow');
+			radialGradient1.addColorStop(1, 'rgb(255, 255,   255)');
+			context.fillStyle = radialGradient1;
+			context.arc(100,100,50,(Math.PI/180)*0,(Math.PI/180)*360,false);
+			context.fill();
+		i=-1;
+		this.update=function(){
+			r2+=1*i;
+			var radialGradient1 =
+    			context.createRadialGradient(x1, y1, r1, x2, y2, r2);
+			radialGradient1.addColorStop(0, 'yellow');
+			radialGradient1.addColorStop(1, 'rgb(255, 255,   255)');
+			context.fillStyle = radialGradient1;
+			context.arc(100,100,50,(Math.PI/180)*0,(Math.PI/180)*360,false);
+			context.fill();
+			if(r2==20||r2==50) i*=-1;
+			
+		}
+		this.left=function(){
+			x1-=4;
+			x2-=4;
+		}
+		this.right=function(){
+			x1+=4;
+			x2+=4;
+		}
+		document.onkeydown = keydown;
+		function keydown(){
+		 var keycode = event.keyCode;
+		 if(keycode == 37) {
+		  m.left();
+		 }
+		 if(keycode == 39) {
+		  m.right();
+		 }
+		}
+	}
+	var m=new my();
+	function up(){m.update();timer = setTimeout(up, 20)}
+	up();
+    </script>
+</body>
+</html>

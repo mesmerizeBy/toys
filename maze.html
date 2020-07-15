@@ -1,0 +1,219 @@
+ <html lang="en">
+<head>
+  <title>Ethersee</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta charset="utf-8" />
+  <style type="text/css">
+  	body{
+  		height: 100%;
+  	}
+  </style>
+  
+</head>
+<body>
+	<div style="margin:200 auto; width: 500px; height: 500px;">
+		<canvas id="myCanvas" width="500" height="500" ></canvas>
+	</div>
+	<script >
+  	
+  	var c=document.getElementById("myCanvas");
+	var ctx=c.getContext("2d");
+  	function mazeMap(){
+  		list=[];
+  		arrMap=[];
+  		var wid,border,areasize,space,player;
+  		this.initMaze=function (){
+	  		var size=41;
+	  		for(var i=0;i<size;i++){
+	  			if(i%2!=0){
+	  				var a=[...Array(size).keys()].map(function(e,k){
+	  					if(k%2!=0){
+	  						list.push({x:i,y:k});
+	  						return new Maze(i,k,1)
+	  					}
+	  					else{
+	  						return new Maze(i,k,0)
+	  					}
+	  				})
+	  				arrMap.push(a);
+	  			}
+	  			else{
+	  				var a=[...Array(size).keys()].map(function(e,k){return new Maze(i,k,0)});
+	  				arrMap.push(a);
+	  			}
+	  		}
+
+	  		areasize=document.getElementById("myCanvas").width;
+	  		// console.log(areasize);
+	  		space=1;
+	  		wid=Math.floor(areasize/arrMap.length);
+	  		border=(areasize%arrMap.length)/2;
+	  		player=new my(wid+border+(wid+space*2)/2,wid+border+(wid+space*2)/2,wid/2);
+	  		document.onkeydown = keydown;
+			function keydown(){
+			 var keycode = event.keyCode;
+			 if(keycode == 37) {
+			  player.left();
+			 }
+			 if(keycode == 39) {
+			  player.right();
+			 }
+			 if(keycode == 38) {
+			  player.up();
+			 }
+			 if(keycode == 40) {
+			  player.down();
+			 }
+			}
+
+	  		console.log(arrMap)
+	  		return arrMap;
+	  	}
+	  	function Maze(x=0,y=0,type){
+	  		this.x=x;
+	  		this.y=y;
+	  		this.visit=0;
+	  		this.type=type;
+	  	}
+	  	this.createMaze=function (){
+	  		var dd=[{dx:0,dy:-2},{dx:2,dy:0},{dx:0,dy:2},{dx:-2,dy:0}];
+	  		console.log(list);
+	  		random=function(o){
+	  			var l=[];
+	  			for(var i=0;i<4;i++){
+	  				if(typeof(arrMap[o.x+dd[i].dx])!=='undefined'&&typeof(arrMap[o.x+dd[i].dx][o.y+dd[i].dy])!=='undefined'&&arrMap[o.x+dd[i].dx][o.y+dd[i].dy].visit==0)
+	  					l.push({x:o.x+dd[i].dx,y:o.y+dd[i].dy});
+	  			}
+	  			if(l.length==0)
+	  				return 0;
+	  			else{
+	  				return l[Math.floor(Math.random()*l.length)];
+	  			}
+	  		}
+	  		
+	  		var now=0;
+	  		arrMap[list[now].x][list[now].y].visit=1;
+	  		while(list.length!=0){
+	  			
+	  			var cell=list[now];
+	  			var re=random(cell);
+	  			if(re!=0){
+	  				arrMap[(re.x+cell.x)/2][(re.y+cell.y)/2].type=1;
+	  				arrMap[re.x][re.y].visit=1;
+	  				for(var j=0;j<list.length;j++){
+	  					if(re.x==list[j].x&&re.y==list[j].y){
+	  						now=j;
+	  						break;
+	  					}
+	  				}
+	  			}
+	  			else{
+	  				list.splice(now, 1);
+	  				var t;
+	  				if(list.length!=0){
+	  					// now=Math.floor(Math.random()*list.length)
+		  				// while(arr[list[now].x][list[now].y].visit!=1){
+		  				// 	now=Math.floor(Math.random()*list.length)
+		  				// }
+		  				var ll=[];
+		  				for(var j=0;j<list.length;j++){
+			  				if(arrMap[list[j].x][list[j].y].visit==1)
+			  					ll.push(j);
+			  			}
+		  				now=ll[Math.floor(Math.random()*ll.length)];
+	  				}
+	  				
+	  			}
+	  			
+	  			// console.log(count,ll.length)
+	  		}
+	  		console.log(list);
+	  	}
+		
+	  	this.draw= function (){
+	  		ctx.clearRect(0,0, 500, 500); 
+	  		ctx.fillStyle="rgba(225,0,0,0.5)";
+
+	  		ctx.beginPath();
+	  		for(var i=0;i<arrMap.length;i++){
+	  			for(var j=0;j<arrMap[i].length;j++){
+	  				var fromx=wid*j+border;
+	  				var fromy=wid*i+border;
+	  				// var tox=wid*(j+1)+border;
+	  				// var toy=wid*(i+1)+border;
+	  				// console.log(fromx)
+	  				if(arrMap[i][j].type==0)
+	  				ctx.fillRect(fromx+space,fromy+space,wid-space,wid-space);
+	  			}
+	  		}
+	  		player.update();
+	  		ctx.closePath();
+	  	}
+  	}
+  	
+
+  	
+  	function my(x,y,r){
+  		var maxr=r;
+		var x1=x;
+		var y1=y;
+		var r1=r/2;
+		var x2=x;
+		var y2=y;
+		var r2=r;
+		var i=-1;
+		this.update=function(){
+			r2+=0.5*i;
+			if(r2==r1||r2==maxr) i*=-1;
+			this.draw();
+		}
+		this.draw=function(){
+			var radialGradient1 =
+    			ctx.createRadialGradient(x1, y1, r1, x2, y2, r2);
+			radialGradient1.addColorStop(0, 'black');
+			radialGradient1.addColorStop(1, 'rgb(255, 255,   255)');
+			ctx.fillStyle = radialGradient1;
+			ctx.arc(x1,y1,r,(Math.PI/180)*0,(Math.PI/180)*360,false);
+			ctx.fill();
+		}
+		this.right=function(){
+			x1+=r*2;
+			x2+=r*2;
+		}
+		this.left=function(){
+			x1-=r*2;
+			x2-=r*2;
+		}
+		this.up=function(){
+			y1-=r*2;
+			y2-=r*2;
+		}
+		this.down=function(){
+			y1+=r*2;
+			y2+=r*2;
+		}
+	}
+	
+  	window.onload=function(){
+  		var maze=new mazeMap()
+  		maze.initMaze()
+  		// draw(a);
+  		maze.createMaze()
+  		maze.draw()
+  		
+		function up(){maze.draw(); timer = setTimeout(up, 100)}
+		up();
+		
+  	}
+  	
+  </script>
+</body>
+</html>
+
+<!-- <li class="nav-item tab-item"> <a class="nav-link tab-link" id="vaultTab" data-toggle="tab" href="#vaultArea" role="tab" aria-controls="vaultArea" aria-selected="false">金库</a> </li> <div class="col"> <button type="button" id="tixReinvest" class="btn btn-block btn-outline-gold btn-lg ticketProcess"><svg class="svg-inline--fa fa-piggy-bank fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="piggy-bank" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M560 224h-29.5c-8.8-20-21.6-37.7-37.4-52.5L512 96h-32c-29.4 0-55.4 13.5-73 34.3-7.6-1.1-15.1-2.3-23-2.3H256c-77.4 0-141.9 55-156.8 128H56c-14.8 0-26.5-13.5-23.5-28.8C34.7 215.8 45.4 208 57 208h1c3.3 0 6-2.7 6-6v-20c0-3.3-2.7-6-6-6-28.5 0-53.9 20.4-57.5 48.6C-3.9 258.8 22.7 288 56 288h40c0 52.2 25.4 98.1 64 127.3V496c0 8.8 7.2 16 16 16h64c8.8 0 16-7.2 16-16v-48h128v48c0 8.8 7.2 16 16 16h64c8.8 0 16-7.2 16-16v-80.7c11.8-8.9 22.3-19.4 31.3-31.3H560c8.8 0 16-7.2 16-16V240c0-8.8-7.2-16-16-16zm-128 64c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16zM256 96h128c5.4 0 10.7.4 15.9.8 0-.3.1-.5.1-.8 0-53-43-96-96-96s-96 43-96 96c0 2.1.5 4.1.6 6.2 15.2-3.9 31-6.2 47.4-6.2z"></path></svg> <i class="fas fa-piggy-bank"></i>  使用金库</button> </div>-->
