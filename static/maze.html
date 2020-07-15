@@ -1,0 +1,142 @@
+ <html lang="en">
+<head>
+  <title>Ethersee</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta charset="utf-8" />
+  <style type="text/css">
+  	body{
+  		height: 100%;
+  	}
+  </style>
+  <script type="text/javascript">
+  	var list=[];
+  	function initMaze(){
+  		var size=41;
+  		var arr=new Array();
+  		for(var i=0;i<size;i++){
+  			if(i%2!=0){
+  				var a=[...Array(size).keys()].map(function(e,k){
+  					if(k%2!=0){
+  						list.push({x:i,y:k});
+  						return new Maze(i,k,1)
+  					}
+  					else{
+  						return new Maze(i,k,0)
+  					}
+  				})
+  				arr.push(a);
+  			}
+  			else{
+  				var a=[...Array(size).keys()].map(function(e,k){return new Maze(i,k,0)});
+  				arr.push(a);
+  			}
+  		}
+  		console.log(arr)
+  		return arr;
+  	}
+  	function Maze(x=0,y=0,type){
+  		this.x=x;
+  		this.y=y;
+  		this.visit=0;
+  		this.type=type;
+  	}
+
+  	function createMaze(arr){
+  		var dd=[{dx:0,dy:-2},{dx:2,dy:0},{dx:0,dy:2},{dx:-2,dy:0}];
+  		console.log(list);
+  		random=function(o){
+  			var l=[];
+  			for(var i=0;i<4;i++){
+  				if(typeof(arr[o.x+dd[i].dx])!=='undefined'&&typeof(arr[o.x+dd[i].dx][o.y+dd[i].dy])!=='undefined'&&arr[o.x+dd[i].dx][o.y+dd[i].dy].visit==0)
+  					l.push({x:o.x+dd[i].dx,y:o.y+dd[i].dy});
+  			}
+  			if(l.length==0)
+  				return 0;
+  			else{
+  				return l[Math.floor(Math.random()*l.length)];
+  			}
+  		}
+  		
+  		var now=0;
+  		arr[list[now].x][list[now].y].visit=1;
+  		while(list.length!=0){
+  			
+  			var cell=list[now];
+  			var re=random(cell);
+  			if(re!=0){
+  				arr[(re.x+cell.x)/2][(re.y+cell.y)/2].type=1;
+  				arr[re.x][re.y].visit=1;
+  				for(var j=0;j<list.length;j++){
+  					if(re.x==list[j].x&&re.y==list[j].y){
+  						now=j;
+  						break;
+  					}
+  				}
+  			}
+  			else{
+  				list.splice(now, 1);
+  				if(list.length!=0){
+  					now=Math.floor(Math.random()*list.length)
+	  				while(arr[list[now].x][list[now].y].visit!=1){
+	  					now=Math.floor(Math.random()*list.length)
+	  				}
+  				}
+  				
+  			}
+  			var count=0;
+  			for(var j=0;j<list.length;j++){
+  				if(arr[list[j].x][list[j].y].visit==1)
+  					count++;
+  			}
+  			console.log(count)
+  		}
+  		console.log(list);
+  	}
+
+  	function draw(arr){
+  		var c=document.getElementById("myCanvas");
+  		var ctx=c.getContext("2d");
+  		ctx.fillStyle="rgba(225,0,0,0.5)";
+
+  		var areasize=document.getElementById("myCanvas").width;
+  		// console.log(areasize);
+  		var space=1;
+
+  		var wid=Math.floor(areasize/arr.length);
+  		var border=(areasize%arr.length)/2;
+
+  		for(var i=0;i<arr.length;i++){
+  			for(var j=0;j<arr[i].length;j++){
+  				var fromx=wid*j+border;
+  				var fromy=wid*i+border;
+  				// var tox=wid*(j+1)+border;
+  				// var toy=wid*(i+1)+border;
+  				// console.log(fromx)
+  				if(arr[i][j].type==0)
+  				ctx.fillRect(fromx+space,fromy+space,wid-space,wid-space);
+  			}
+  		}
+  		
+  	}
+  	window.onload=function(){
+  		var a=initMaze()
+  		// draw(a);
+  		createMaze(a)
+  		draw(a);
+  	}
+  	
+  </script>
+</head>
+<body>
+	<div style="margin:200 auto; width: 500px; height: 500px;">
+		<canvas id="myCanvas" width="500" height="500" ></canvas>
+	</div>
+	
+</body>
+</html>

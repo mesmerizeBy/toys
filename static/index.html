@@ -1,0 +1,180 @@
+ <html lang="en">
+<head>
+  <title>Ethersee</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta charset="utf-8" />
+  <script id="tplList" type="text/template">
+    <tr>
+      <td >第$count$轮</td>
+      <td><a style='cursor:pointer;font-size:0.56em;' data-clipboard-text='$prepdfurl$' id='pre$count$' target='_blank'>$vprepdfurl$</a></td>
+      <td>$type$</td>
+      <td><a style='cursor:pointer;font-size:0.56em;' data-clipboard-text='$password$' id='pwd$count$'>$vpassword$</a></td>
+      <td><a style='cursor:pointer;font-size:0.56em;' data-clipboard-text='$iv$' id='iv$count$'>$iv$</a></td>
+    </tr>
+  </script>
+
+  <script type="text/javascript">
+    $(".game-history-list").html("<li style='font-size: 0.56em'>第"+(count+1)+"轮:&emsp;&emsp;<a style='cursor:pointer;' href='"+data.data.prepdfurl+"' target='_blank'>猜拳文件</a>&emsp;&emsp;<a style='font-size:0.56em;cursor:pointer;' data-clipboard-text='"+data.data.password+"' id='pwd"+count+"'>"+data.data.password+"<\/a></li>"+$(".game-history-list").html());
+    count++;
+    var ogj={
+      "count":count+1,
+      "prepdfurl":data.data.preencodestr,
+      "type":userCaiquan,
+      "password":data.data.password,
+      "iv":data.data.iv,
+      "vprepdfurl":data.data.preencodestr.substr(0,5)+"...",
+      "vpassword":data.data.password.substr(0,5)+"..."
+    }
+    console.log($("#tplList").html())
+    $(".game-history-list").html($("#tplList").html().temp(obj)+$(".game-history-list").html())
+    $("#tplList").html().temp(obj)
+    if(Clipboard.isSupported()){
+      for(var i=0;i<=count;i++){
+        var clipboard = new Clipboard(document.getElementById("pwd"+i));
+        var clipboard = new Clipboard(document.getElementById("pre"+i));
+        var clipboard = new Clipboard(document.getElementById("iv"+i));
+        if(Clipboard.isSupported())
+        var clipboard = new Clipboard(document.getElementById("shangjiachuquan"));
+        
+        alert("pwd"+i);
+      }
+    }else{
+      alert("不支持复制");
+    }
+    $(".copymsg").on("click",function(){
+      $(".message-notice-content").fadeIn(1500,function(){
+        $(".message-notice-content").fadeOut(1500)
+      })
+    });
+  </script>
+</head>
+<body>
+	<div id="app"></div>
+
+  <!-- <script type="text/javascript" src="../dist/bundle.js"></script> -->
+  <div class="game-success-wrap js-game-history-wrap" class="copymsg" style="top: 40%;">
+  <!-- <div class="rule-title"></div> -->
+  <div class="close"></div>
+  <div class="game-rule-alert" style="height: 7.53rem;text-align: center;">
+        <table  style="width: 60%; height: 80%;  margin:0 auto; ">
+          <thead>
+            <tr>
+              <td>轮数</td>
+              <td>商家手势</td>
+              <td>您的手势</td>
+              <td>密码</td>
+              <td>偏移量</td>
+            </tr>
+          </thead>
+          <tbody class="game-history-list">
+            
+          </tbody>
+        </table>
+        <ul class="game-history-list" style="width: 60%; height: 80%; display: block; margin:0 auto; overflow:auto; ">
+           
+        </ul>
+        <div class="message-notice-content">
+          <div class="message-custom-content message-success">
+            <i class="anticon anticon-check-circle"></i>
+            <span>已复制到剪切板</span>
+          </div>
+        </div>
+        <style>
+        @font-face {
+          font-family: 'MyNewFont';   /*字体名称*/
+          src: url('https://at.alicdn.com/t/font_148784_v4ggb6wrjmkotj4i.woff');       /*字体源文件*/
+        }
+          .message-notice-content {
+              position: absolute;
+              top: 50%;
+              z-index: 1000;
+              left: 50%;
+              padding: 10px 16px;
+              border-radius: 4px;
+              -webkit-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+              background: #fff;
+              display: inline-block;
+              pointer-events: all;
+              transform: translate(-50%, -50%);
+          }
+          .message .anticon {
+              margin-right: 8px;
+              font-size: 24px;
+              top: 1px;
+              position: relative;
+          }
+          .message-success .anticon {
+              color: #52c41a;
+          }
+          .anticon {
+              display: inline-block;
+              font-style: normal;
+              vertical-align: baseline;
+              text-align: center;
+              text-transform: none;
+              line-height: 1;
+              text-rendering: optimizeLegibility;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+          }
+          .anticon-check-circle:before {
+              content: "\E630";
+          }
+          .anticon:before {
+              display: block;
+              font-family: "MyNewFont" !important;
+          }
+          .game-rule-alert tr{
+            height: 20%;
+          }
+          .js-game-history-wrap {
+              height: 80%;
+          }
+          .iframe-box {
+              -webkit-overflow-scrolling: touch;
+              overflow-y: scroll;
+              /* 提示: 请在此处加上需要设置的大小(dimensions)或位置(positioning)信息! */
+          }
+
+        </style>
+    </div>
+  </div>
+  <div class="game-success-wrap js-game-history-wrap" style="display: block; width: 100%;">
+
+
+     <div class="rule-title"></div>
+     <div class="close"></div>
+     <div style="width: 100%; height: 40%">
+       <iframe src="http://tool.chacuo.net/cryptdes" scrolling="yes" frameborder="0" height="100%" id="mainFrame" width="100%">
+      </iframe>  
+     </div>
+         
+     <div class="game-rule-alert" style="height: 7.53rem; width:100%;text-align: center;overflow:auto;">
+         <table style="width: 90%; height: 80%;font-size:0.66em;  margin:0 auto; ">
+               <thead>
+                   <tr>
+                       <td>轮数</td>
+                       <td>商家手势</td>
+                       <td>您的手势</td>
+                       <td>密码</td>
+                       <td>偏移量</td>
+                   </tr>
+               </thead>
+               <tbody class="game-history-list" style="overflow:auto;">
+                                                                                                                                                   
+               </tbody>
+        </table>
+     </div>
+     <div>
+     </div>
+ </div>
+</body>
+
+
